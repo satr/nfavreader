@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{08D5CAAD-D724-4F1B-87CA-017CCCBDFE53}"
+	ProjectSection(SolutionItems) = preProject
+		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
+		NFavReader.vsmdi = NFavReader.vsmdi
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NFavReader", "NFavReader\NFavReader.csproj", "{8399964F-70DA-4348-8A99-BEBF1E5FC648}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NFavReaderTests", "NFavReaderTests\NFavReaderTests.csproj", "{B39B1A6E-BE3D-47EB-8544-D69454EEA656}"
+EndProject
+Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = NFavReader.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8399964F-70DA-4348-8A99-BEBF1E5FC648}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8399964F-70DA-4348-8A99-BEBF1E5FC648}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8399964F-70DA-4348-8A99-BEBF1E5FC648}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8399964F-70DA-4348-8A99-BEBF1E5FC648}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B39B1A6E-BE3D-47EB-8544-D69454EEA656}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B39B1A6E-BE3D-47EB-8544-D69454EEA656}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B39B1A6E-BE3D-47EB-8544-D69454EEA656}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B39B1A6E-BE3D-47EB-8544-D69454EEA656}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
