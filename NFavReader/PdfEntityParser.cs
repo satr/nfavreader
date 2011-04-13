@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace NFavReader {
     public class PdfEntityParser {
-        public static PdfContentObject GetObjectByRef(string value, IDictionary<int, PdfContentObject> contentObjects) {
+        public static AbstractPdfDocumentObject GetObjectByRef(string value, IDictionary<int, AbstractPdfDocumentObject> contentObjects) {
             var match = new Regex(PdfConstants.Object.REF_PATTERN).Match(value);
             GroupCollection groups = match.Groups;
             var idValue = groups[PdfConstants.Object.ID_GROUP].Value;
@@ -15,7 +15,7 @@ namespace NFavReader {
             return GetObjectByRef(idValue, valValue, typeValue, contentObjects);
         }
 
-        private static PdfContentObject GetObjectByRef(string idValue, string valValue, string typeValue, IDictionary<int, PdfContentObject> contentObjects){
+        private static AbstractPdfDocumentObject GetObjectByRef(string idValue, string valValue, string typeValue, IDictionary<int, AbstractPdfDocumentObject> contentObjects){
             int objectId;
             int.TryParse(idValue, out objectId);
             int val;
@@ -25,8 +25,8 @@ namespace NFavReader {
                        : null;
         }
 
-        public static List<PdfContentObject> GetArrayOfObject(string value, IDictionary<int, PdfContentObject> contentObjects){
-            var refContentObjects = new List<PdfContentObject>();
+        public static List<PdfDocumentScalarObject> GetArrayOfObject(string value, IDictionary<int, AbstractPdfDocumentObject> contentObjects){
+            var refContentObjects = new List<PdfDocumentScalarObject>();
             MatchCollection matches = new Regex(PdfConstants.Array.OBJECTS_PATTERN).Matches(value);
             foreach (Match match in matches) {
                 if (match.Groups.Count == 5) {
@@ -48,6 +48,10 @@ namespace NFavReader {
             long numVal = 0;
             long.TryParse(value.Substring(0, value.IndexOf(" ")), out numVal);
             return numVal;
+        }
+
+        public static bool IsXRefOffsetUsed(string value){
+            return value.Trim().ToLower().EndsWith("n");
         }
 
         public static int GetXRefStartObjectNum(string value){

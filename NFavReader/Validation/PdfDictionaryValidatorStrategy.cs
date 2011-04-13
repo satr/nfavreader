@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace NFavReader.Validation{
     internal static class PdfDictionaryValidatorStrategy{
-        public static AbstractPdfDictionaryValidator GetStrategyFor(string key, IDictionary<string, object> dictionary, IDictionary<int, PdfContentObject> contentObjects) {
+        public static AbstractPdfDictionaryValidator GetStrategyFor(string key, IDictionary<string, object> dictionary, IDictionary<int, AbstractPdfDocumentObject> contentObjects) {
             object value = dictionary[key];
             if (value == null)
                 return new PdfDictionaryNullValidator();

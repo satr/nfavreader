@@ -16,13 +16,15 @@ namespace NFavReaderTests {
         private const string PDF_MULTILINE_FILE = "pdf-multiline.pdf";
         private const string PDF_ONE_LINE_FILE = "pdf-one-line.pdf";
         private const string PDF_EMPTY_FILE = "pdf-empty.pdf";
+        private const string PDF_LONG_FILE = "pdf-long.pdf";
 
         private TestContext testContextInstance;
-        private ReaderEngine _engine;
+        private PdfReaderEngine _engine;
         private static string _locationPath;
         private static string _pdfOneLineFilePath;
         private static string _pdfMultiLineFilePath;
         private static string _pdfEmptyFilePath;
+        private static string _pdfLongFilePath;
 
         /// <summary>
         ///Gets or sets the test context which provides
@@ -41,13 +43,14 @@ namespace NFavReaderTests {
         // Use ClassInitialize to run code before running the first test in the class
          [ClassInitialize()]
          public static void MyClassInitialize(TestContext testContext){
-             Assembly assembly = Assembly.GetAssembly(typeof(ReaderEngine));
+             Assembly assembly = Assembly.GetAssembly(typeof(PdfReaderEngine));
              if (assembly == null)
                  throw new InvalidOperationException("Reader assembly not found");
              _locationPath = new FileInfo(assembly.Location).DirectoryName;
              _pdfEmptyFilePath = Path.Combine(_locationPath, PDF_EMPTY_FILE);
              _pdfOneLineFilePath = Path.Combine(_locationPath, PDF_ONE_LINE_FILE);
              _pdfMultiLineFilePath = Path.Combine(_locationPath, PDF_MULTILINE_FILE);
+             _pdfLongFilePath = Path.Combine(_locationPath, PDF_LONG_FILE);
          }
 
         // Use ClassCleanup to run code after all tests in a class have run
@@ -57,7 +60,7 @@ namespace NFavReaderTests {
         // Use TestInitialize to run code before running each test 
          [TestInitialize()]
          public void MyTestInitialize(){
-             _engine = new ReaderEngine();
+             _engine = new PdfReaderEngine();
          }
 
         // Use TestCleanup to run code after each test has run
@@ -88,9 +91,9 @@ namespace NFavReaderTests {
 
         [TestMethod]
         public void TestArrayOfObjectsParser(){
-            var contentObjects = new Dictionary<int, PdfContentObject>(){{7, new PdfContentObject(7,8,30)},
-                                                                         {3, new PdfContentObject(3,4,20)},
-                                                                         {1, new PdfContentObject(1,2,10)},
+            var contentObjects = new Dictionary<int, AbstractPdfDocumentObject>(){{7, new PdfDocumentScalarObject(7,30, 0)},
+                                                                         {3, new PdfDocumentScalarObject(3,20, 0)},
+                                                                         {1, new PdfDocumentScalarObject(1,10, 0)},
                                                                         };
             var list = PdfEntityParser.GetArrayOfObject(@"[ 1 2 R 3 4 R 7 8 R]", contentObjects);
             Assert.IsNotNull(list);
@@ -128,12 +131,12 @@ namespace NFavReaderTests {
             }
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void TestReadXRefTables(){
-            _engine.FileName = _pdfOneLineFilePath;
+            _engine.FileName = _pdfLongFilePath;
             using (var reader = new StreamReader(_engine.FileStream, true)){
                 var offsets = new Dictionary<int, long>();
-                _engine.PopulateObjectOffsets(offsets);
+                _engine.PopulateObjectOffsets(new PdfStructure(), reader);
             }
         }
 
