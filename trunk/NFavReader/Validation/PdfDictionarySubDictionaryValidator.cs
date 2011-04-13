@@ -2,10 +2,10 @@ using System.Collections.Generic;
 
 namespace NFavReader.Validation{
     internal class PdfDictionarySubDictionaryValidator : AbstractPdfDictionaryValidator {
-        private IDictionary<int, PdfContentObject> ContentObjects { get; set; }
+        private IDictionary<int, AbstractPdfDocumentObject> ContentObjects { get; set; }
 
         public PdfDictionarySubDictionaryValidator(IDictionary<string, object> subDictionary, 
-                                                    IDictionary<int, PdfContentObject> contentObjects)
+                                                    IDictionary<int, AbstractPdfDocumentObject> contentObjects)
             : base(subDictionary, string.Empty){
             ContentObjects = contentObjects;
         }

@@ -2,12 +2,12 @@
     public class PdfConstants {
         public static class XRef{
             public const string Row = @"^\d{10} \d{5} [fn][ ]*$";
-            public const string Couner = @"^\d+ \d+$";
+            public const string Counter = @"^\d+ \d+$";
         }
 
         public static class Markers {
             public static string Percent = "%";
-            public static string SpaceObj = " obj";
+            public static string Obj = "obj";
             public static string EndObj = "endobj";
             public static string Stream = "stream";
             public static string EndStream = "endstream";
@@ -21,10 +21,20 @@
         public static class Names{
             public static string Type = "/Type";
             public static string Prev = "/Prev";
+            public static string Root = "/Root";
+            public static string Catalog = "/Catalog";
+            public static string Pages = "/Pages";
+            public static string Page = "/Page";
+            public static string Count = "/Count";
+            public static string Kids = "/Kids";
+            public static string Length = "/Length";
         }
 
         public static class Dictionary{
-            public const string PATTERN = @"\A<<(?<ENTRY>(?<KEY>/\w+)((?<VALUE>\[{1}[^\]]+\]{1})|(?<VALUE>[^\[^w][^/^\]]+))[\n\r]{0,1})+>>";
+            public static string ENTRY_GROUP = "ENTRY";
+            public static string KEY_GROUP = "KEY";
+            public static string VALUE_GROUP = "VALUE";
+            public const string PATTERN = @"\A<<(?<ENTRY>(?<KEY>/\w+)((?<VALUE>[ ]*\[[^\]]+\])|(?<VALUE>[ ]*[^\[^\w][^/^\]]+))[\n\r]{0,1})+>>";
 //            public const string PATTERN = @"\A<<(?<1>(?<2>/\w+)((?<3>\[{1}[^\]]+\]{1})|(?<3>[^\[^w][^/^\]]+))[\n\r]{0,1})+>>";
         }
 

@@ -46,7 +46,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PdfConstants.cs" />
-    <Compile Include="PdfContentObject.cs" />
+    <Compile Include="PdfDocumentObjects\AbstractPdfDocumentExtendedObject.cs" />
+    <Compile Include="PdfDocumentObjects\AbstractPdfDocumentObject.cs" />
+    <Compile Include="PdfDocumentObjects\PdfDocumentCatalogObject.cs" />
+    <Compile Include="PdfDocumentObjects\PdfDocumentPageObject.cs" />
+    <Compile Include="PdfDocumentObjects\PdfDocumentScalarObject.cs" />
+    <Compile Include="PdfDocumentObjects\PdfDocumentContentObject.cs" />
+    <Compile Include="PdfDocumentObjects\PdfDocumentPagesObject.cs" />
     <Compile Include="PdfEntityParser.cs" />
     <Compile Include="PdfException.cs" />
     <Compile Include="Validation\AbstractPdfDictionaryValidator.cs" />
@@ -58,7 +64,7 @@
     <Compile Include="Validation\PdfDictionaryValidator.cs" />
     <Compile Include="Validation\PdfDictionaryValidatorStrategy.cs" />
     <Compile Include="PdfStructure.cs" />
-    <Compile Include="ReaderEngine.cs" />
+    <Compile Include="PdfReaderEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
