@@ -25,8 +25,8 @@ namespace NFavReader {
                        : null;
         }
 
-        public static List<PdfDocumentScalarObject> GetArrayOfObject(string value, IDictionary<int, AbstractPdfDocumentObject> contentObjects){
-            var refContentObjects = new List<PdfDocumentScalarObject>();
+        public static IList<AbstractPdfDocumentObject> GetArrayOfObject(string value, IDictionary<int, AbstractPdfDocumentObject> contentObjects) {
+            var refContentObjects = new List<AbstractPdfDocumentObject>();
             MatchCollection matches = new Regex(PdfConstants.Array.OBJECTS_PATTERN).Matches(value);
             foreach (Match match in matches) {
                 if (match.Groups.Count == 5) {
