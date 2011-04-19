@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using NFavReader.Validation;
 
 namespace NFavReader {
     public class PdfReaderEngine {
@@ -47,18 +44,6 @@ namespace NFavReader {
             return objects;
         }
 
-//        private static void ReadPdfDocument(PdfStructure pdfStructure, StreamReader reader){
-//            string line;
-//            long position = 0;
-//            while ((line = reader.ReadLine()) != null) {
-//                if (line.StartsWith(PdfConstants.Markers.Percent))
-//                    pdfStructure.AddPercentMarkerValue(line.Substring(1));
-//                if (line.EndsWith(PdfConstants.Markers.Obj))
-//                    ReadPdfDocumentObject(pdfStructure, reader, position, line);
-//                position = reader.BaseStream.Position;
-//            }
-//        }
-//
         private AbstractPdfDocumentObject ReadPdfDocumentObject(int objectId, long objectPosition, StreamReader reader){
             reader.DiscardBufferedData();
             reader.BaseStream.Seek(objectPosition, SeekOrigin.Begin);
@@ -82,7 +67,6 @@ namespace NFavReader {
                 }
                 if (line.Equals(PdfConstants.Markers.Stream))
                     return new PdfStreamObject(objectId, objectPosition, dictionary, position);
-//                    ReadPdfContentObjectStream(pdfContentObject, reader);
                 if (line.StartsWith(PdfConstants.Markers.StartDictionary))
                     dictionary = ReadPdfDictionary(reader, line);
                 position = reader.BaseStream.Position;
@@ -234,7 +218,7 @@ namespace NFavReader {
             return GetObject<T>(key, dictionary, true);
         }
 
-        private T GetObject<T>(string key, IDictionary<string, object> dictionary, bool isMandatory) {
+        private static T GetObject<T>(string key, IDictionary<string, object> dictionary, bool isMandatory) {
             if (dictionary.ContainsKey(key))
                 return (T)dictionary[key];
             if (isMandatory)
