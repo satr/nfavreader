@@ -46,13 +46,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PdfConstants.cs" />
-    <Compile Include="PdfDocumentObjects\AbstractPdfDocumentExtendedObject.cs" />
+    <Compile Include="PdfDocumentObjects\PdfDictionaryObject.cs" />
     <Compile Include="PdfDocumentObjects\AbstractPdfDocumentObject.cs" />
-    <Compile Include="PdfDocumentObjects\PdfDocumentCatalogObject.cs" />
-    <Compile Include="PdfDocumentObjects\PdfDocumentPageObject.cs" />
-    <Compile Include="PdfDocumentObjects\PdfDocumentScalarObject.cs" />
-    <Compile Include="PdfDocumentObjects\PdfDocumentContentObject.cs" />
-    <Compile Include="PdfDocumentObjects\PdfDocumentPagesObject.cs" />
+    <Compile Include="PdfDocumentObjects\PdfCatalogObject.cs" />
+    <Compile Include="PdfDocumentObjects\PdfPageObject.cs" />
+    <Compile Include="PdfDocumentObjects\PdfScalarObject.cs" />
+    <Compile Include="PdfDocumentObjects\PdfStreamObject.cs" />
+    <Compile Include="PdfDocumentObjects\PdfPagesObject.cs" />
     <Compile Include="PdfEntityParser.cs" />
     <Compile Include="PdfException.cs" />
     <Compile Include="Validation\AbstractPdfDictionaryValidator.cs" />
@@ -66,6 +66,8 @@
     <Compile Include="PdfStructure.cs" />
     <Compile Include="PdfReaderEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Validation\PdfObjectValidator.cs" />
+    <Compile Include="Validation\PdfObjectValidatorFactory.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

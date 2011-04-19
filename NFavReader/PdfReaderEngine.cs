@@ -11,6 +11,7 @@ namespace NFavReader {
         readonly Regex _xrefObjectCounterRegex = new Regex(PdfConstants.XRef.Counter);
         readonly Regex _xrefOffsetRegex = new Regex(PdfConstants.XRef.Row);
         readonly Regex _xrefIntegerRegex = new Regex(PdfConstants.Integer.PATTERN);
+        readonly Regex _endOfLineRegex = new Regex(PdfConstants.Patterns.EndOfLine);
         public string FileName { get; set; }
 
         public Stream FileStream{
@@ -27,23 +28,23 @@ namespace NFavReader {
                 return pdfStructure;
             using (var reader = new StreamReader(FileStream, true))
                 ReadPdfDocument(pdfStructure, reader);
-            pdfStructure.Validate();
+            pdfStructure.ValidatePdfObjects();
             return pdfStructure;
         }
 
         private void ReadPdfDocument(PdfStructure pdfStructure, StreamReader reader){
-            PopulateObjectOffsets(pdfStructure, reader);
-            LoadObjects(pdfStructure, reader);
+            var objectOffsets = GetObjectOffsets(pdfStructure, reader);
+            pdfStructure.PdfObjects = GetPdfObjects(objectOffsets, reader);
         }
 
-        private void LoadObjects(PdfStructure pdfStructure, StreamReader reader){
-            foreach (KeyValuePair<int, long> keyValuePair in pdfStructure.ObjectOffsets){
+        private IDictionary<int, AbstractPdfDocumentObject> GetPdfObjects(IEnumerable<KeyValuePair<int, long>> objectOffsets, StreamReader reader){
+            var objects = new Dictionary<int, AbstractPdfDocumentObject>();
+            foreach (var keyValuePair in objectOffsets) {
                 var objectId = keyValuePair.Key;
                 var objectPosition = keyValuePair.Value;
-                reader.DiscardBufferedData();
-                reader.BaseStream.Seek(objectPosition, SeekOrigin.Begin);
-                pdfStructure.Add(ReadPdfDocumentObject(reader, objectId, objectPosition));
+                objects.Add(objectId, ReadPdfDocumentObject(objectId, objectPosition, reader));
             }
+            return objects;
         }
 
 //        private static void ReadPdfDocument(PdfStructure pdfStructure, StreamReader reader){
@@ -58,7 +59,9 @@ namespace NFavReader {
 //            }
 //        }
 //
-        private AbstractPdfDocumentObject ReadPdfDocumentObject(StreamReader reader, int objectId, long objectPosition){
+        private AbstractPdfDocumentObject ReadPdfDocumentObject(int objectId, long objectPosition, StreamReader reader){
+            reader.DiscardBufferedData();
+            reader.BaseStream.Seek(objectPosition, SeekOrigin.Begin);
             string line = reader.ReadLine();
             if(line == null || !line.EndsWith(PdfConstants.Markers.Obj))
                 throw new PdfException("Invalid format for object #{0}", objectId);
@@ -66,16 +69,19 @@ namespace NFavReader {
             IDictionary<string, object> dictionary = new Dictionary<string, object>();
             while ((line = reader.ReadLine()) != null) {
                 if (_xrefIntegerRegex.IsMatch(line))
-                    return new PdfDocumentScalarObject(objectId, position, long.Parse(line));
+                    return new PdfScalarObject(objectId, position, long.Parse(line));
                 if (line.Equals(PdfConstants.Markers.EndObj)){
                     if(ValidateType(PdfConstants.Names.Pages, dictionary))
-                        return new PdfDocumentPagesObject(objectId, position, dictionary);
+                        return new PdfPagesObject(objectId, position, dictionary);
                     if(ValidateType(PdfConstants.Names.Page, dictionary))
-                        return new PdfDocumentPageObject(objectId, position, dictionary);
-                    throw new PdfException("Unexpected end of a PDF-object");
+                        return new PdfPageObject(objectId, position, dictionary);
+                    if(ValidateType(PdfConstants.Names.Catalog, dictionary))
+                        return new PdfCatalogObject(objectId, position, dictionary);
+                    return new PdfDictionaryObject(objectId, position, dictionary);
+//                    throw new PdfException("Unexpected end of a PDF-object");
                 }
                 if (line.Equals(PdfConstants.Markers.Stream))
-                    return new PdfDocumentContentObject(objectId, objectPosition, dictionary, position);
+                    return new PdfStreamObject(objectId, objectPosition, dictionary, position);
 //                    ReadPdfContentObjectStream(pdfContentObject, reader);
                 if (line.StartsWith(PdfConstants.Markers.StartDictionary))
                     dictionary = ReadPdfDictionary(reader, line);
@@ -84,7 +90,7 @@ namespace NFavReader {
             throw new PdfException("End of PDF-object was not found");
         }
 
-        private static Dictionary<string, object> ReadPdfDictionary(TextReader reader, string startLine){
+        private Dictionary<string, object> ReadPdfDictionary(TextReader reader, string startLine){
             var dictionary = new Dictionary<string, object>();
             if(startLine == null)
                 return dictionary;
@@ -109,12 +115,13 @@ namespace NFavReader {
             return dictionary;
         }
 
-        private static void AddDictionaryEntries(IDictionary<string, object> dictionary, CaptureCollection keys, CaptureCollection values, ref int index){
+        private void AddDictionaryEntries(IDictionary<string, object> dictionary, CaptureCollection keys, CaptureCollection values, ref int index){
             while(index < keys.Count) {
                 if (values.Count < index + 1)
                     break;
                 var key = keys[index].Value;
                 var value = values[index].Value;
+                value = _endOfLineRegex.Replace(value, string.Empty);
                 index++;
                 if (!value.Equals(PdfConstants.Markers.StartDictionary)) {
                     if (value.EndsWith(PdfConstants.Markers.EndDictionary)){
@@ -130,7 +137,7 @@ namespace NFavReader {
             }
         }
 
-//        private static void ReadPdfContentObjectStream(PdfDocumentScalarObject pdfContentObject, StreamReader reader){
+//        private static void ReadPdfContentObjectStream(PdfScalarObject pdfContentObject, StreamReader reader){
 //            long startStreamPosition = reader.BaseStream.Position;
 //            long endStreamPosition = startStreamPosition;
 //            pdfContentObject.Stream = new MemoryStream();
@@ -152,18 +159,21 @@ namespace NFavReader {
 //            }
 //        }
 
-        public void PopulateObjectOffsets(PdfStructure pdfStructure, StreamReader reader){
+        public Dictionary<int, long> GetObjectOffsets(PdfStructure pdfStructure, StreamReader reader){
+            var objectOffsets = new Dictionary<int, long>();
             long xrefOffset = GetStartXRefOffset(reader);
-            PopulateObjectOffsetsAndTrailer(pdfStructure, reader, xrefOffset);
-            if (!pdfStructure.HasPrevValue)
-                return;
+            PopulateObjectOffsetsAndTrailer(pdfStructure, reader, xrefOffset, objectOffsets);
+            if (!pdfStructure.TrailerHasPrevValue)
+                return objectOffsets;
             xrefOffset = 0;
             if(!long.TryParse(pdfStructure.TrailerPrevValue, out xrefOffset))
                 throw new PdfException("Invalid \\Prev value \"{0}\"", pdfStructure.TrailerPrevValue);
-            PopulateObjectOffsetsAndTrailer(pdfStructure, reader, xrefOffset);
+            PopulateObjectOffsetsAndTrailer(pdfStructure, reader, xrefOffset, objectOffsets);
+            return objectOffsets;
         }
 
-        public void PopulateObjectOffsetsAndTrailer(PdfStructure pdfStructure, StreamReader reader, long xrefOffset){
+        public void PopulateObjectOffsetsAndTrailer(PdfStructure pdfStructure, StreamReader reader, long xrefOffset, 
+                                                    Dictionary<int, long> objectOffsets){
             reader.DiscardBufferedData();
             reader.BaseStream.Seek(xrefOffset, SeekOrigin.Begin);
             string line = reader.ReadLine();
@@ -184,7 +194,7 @@ namespace NFavReader {
                 }
                 if (_xrefOffsetRegex.IsMatch(line)) {
                     if(PdfEntityParser.IsXRefOffsetUsed(line))
-                        pdfStructure.ObjectOffsets.Add(objectOverallNum, PdfEntityParser.GetXRefOffset(line));
+                        objectOffsets.Add(objectOverallNum, PdfEntityParser.GetXRefOffset(line));
                     objectOverallNum++;
                     objectNum++;
                     continue;

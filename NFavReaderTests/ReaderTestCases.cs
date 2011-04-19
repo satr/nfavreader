@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFavReader;
 
@@ -84,16 +85,16 @@ namespace NFavReaderTests {
         }
 
         [TestMethod]
-        public void TestGetMarkerAttributes(){
+        public void TestLoadPdf(){
             _engine.FileName = _pdfEmptyFilePath;
             var pdfStructure = _engine.LoadPdfStructure();
         }
 
         [TestMethod]
         public void TestArrayOfObjectsParser(){
-            var contentObjects = new Dictionary<int, AbstractPdfDocumentObject>(){{7, new PdfDocumentScalarObject(7,30, 0)},
-                                                                         {3, new PdfDocumentScalarObject(3,20, 0)},
-                                                                         {1, new PdfDocumentScalarObject(1,10, 0)},
+            var contentObjects = new Dictionary<int, AbstractPdfDocumentObject>(){{7, new PdfScalarObject(7,30, 0)},
+                                                                         {3, new PdfScalarObject(3,20, 0)},
+                                                                         {1, new PdfScalarObject(1,10, 0)},
                                                                         };
             var list = PdfEntityParser.GetArrayOfObject(@"[ 1 2 R 3 4 R 7 8 R]", contentObjects);
             Assert.IsNotNull(list);
@@ -136,7 +137,7 @@ namespace NFavReaderTests {
             _engine.FileName = _pdfLongFilePath;
             using (var reader = new StreamReader(_engine.FileStream, true)){
                 var offsets = new Dictionary<int, long>();
-                _engine.PopulateObjectOffsets(new PdfStructure(), reader);
+                _engine.GetObjectOffsets(new PdfStructure(), reader);
             }
         }
 
