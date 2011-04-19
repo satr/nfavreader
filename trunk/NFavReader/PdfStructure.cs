@@ -5,21 +5,17 @@ using NFavReader.Validation;
 namespace NFavReader{
     public class PdfStructure{
         private readonly object _sync = new object();
-        private readonly IDictionary<int, AbstractPdfDocumentObject> _contentObjects = new Dictionary<int, AbstractPdfDocumentObject>();
 
         public PdfStructure(){
-            ObjectOffsets = new Dictionary<int, long>();
             Trailers = new List<IDictionary<string, object>>();
+            PdfObjects = new Dictionary<int, AbstractPdfDocumentObject>();
         }
 
-        public IDictionary<int, long> ObjectOffsets { get; private set; }
         public IList<IDictionary<string, object>> Trailers { get; private set; }
 
-        public IDictionary<int, AbstractPdfDocumentObject> ContentObjects{
-            get { return _contentObjects; }
-        }
+        public IDictionary<int, AbstractPdfDocumentObject> PdfObjects { get; set; }
 
-        public bool HasPrevValue{
+        public bool TrailerHasPrevValue{
             get{
                 return TrailerPrevValue != null;
             }
@@ -35,25 +31,17 @@ namespace NFavReader{
             }
         }
 
-        public void Add(AbstractPdfDocumentObject pdfDocumentObject) {
-            lock(_sync){
-                if (!_contentObjects.ContainsKey(pdfDocumentObject.Id))
-                    _contentObjects.Add(pdfDocumentObject.Id, pdfDocumentObject);
-            }
-        }
-
-        public void Validate(){
-            var contentObjects = ContentObjects;
-            foreach (var pdfContentObject in contentObjects.Values.OfType<AbstractPdfDocumentExtendedObject>())
-                PdfDictionaryValidator.Validate(pdfContentObject.Dictionary, contentObjects);
+        public void ValidatePdfObjects(){
+            foreach (var pdfObject in PdfObjects.Values.OfType<PdfDictionaryObject>())
+                pdfObject.Validate(PdfObjects);
             foreach (var trailer in Trailers)
-                PdfDictionaryValidator.Validate(trailer, contentObjects);
-            Root = GetTrailerObject<PdfDocumentCatalogObject>(PdfConstants.Names.Root, true);
-            PopulatePages(Root.Pages);
+                PdfDictionaryValidator.Validate(trailer, PdfObjects);
+            Root = GetTrailerObject<PdfCatalogObject>(PdfConstants.Names.Root, true);
+//            PopulatePages(Root.Pages);
         }
 
-        private void PopulatePages(List<PdfDocumentPagesObject> pdfDocumentPagesObjects){
-//            parentContentObject.Pages = parentContentObject.GetObject<IList<PdfDocumentScalarObject>>(PdfConstants.Names.Kids);
+        private void PopulatePages(List<PdfPagesObject> pdfDocumentPagesObjects){
+//            parentContentObject.Pages = parentContentObject.GetObject<IList<PdfScalarObject>>(PdfConstants.Names.Kids);
 //            foreach (var contentObject in parentContentObject.Pages)
 //                PopulatePages(contentObject);
         }
@@ -68,7 +56,7 @@ namespace NFavReader{
             return default(T);
         }
 
-        private PdfDocumentCatalogObject Root { get; set; }
+        private PdfCatalogObject Root { get; set; }
 
     }
 }

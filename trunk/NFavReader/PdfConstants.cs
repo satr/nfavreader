@@ -1,5 +1,9 @@
 ﻿namespace NFavReader {
     public class PdfConstants {
+        public static class Patterns{
+            public const string EndOfLine = "[\r\n]";
+        }
+
         public static class XRef{
             public const string Row = @"^\d{10} \d{5} [fn][ ]*$";
             public const string Counter = @"^\d+ \d+$";
@@ -28,6 +32,8 @@
             public static string Count = "/Count";
             public static string Kids = "/Kids";
             public static string Length = "/Length";
+            public static string OpenAction = "/OpenAction";
+            public static string Contents = "/Contents";
         }
 
         public static class Dictionary{

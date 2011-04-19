@@ -7,5 +7,9 @@ namespace NFavReader{
             Id = id;
             Position = position;
         }
+
+        public override string ToString(){
+            return string.Format("{0}|{1}|{2}", "Base", Id, Position);
+        }
     }
 }
