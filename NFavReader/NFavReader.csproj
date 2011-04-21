@@ -46,9 +46,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PdfConstants.cs" />
+    <Compile Include="PdfDocumentObjects\PdfAnnotObject.cs" />
     <Compile Include="PdfDocumentObjects\PdfDictionaryObject.cs" />
     <Compile Include="PdfDocumentObjects\AbstractPdfDocumentObject.cs" />
     <Compile Include="PdfDocumentObjects\PdfCatalogObject.cs" />
+    <Compile Include="PdfDocumentObjects\PdfFontDescriptorObject.cs" />
+    <Compile Include="PdfDocumentObjects\PdfFontObject.cs" />
     <Compile Include="PdfDocumentObjects\PdfPageObject.cs" />
     <Compile Include="PdfDocumentObjects\PdfScalarObject.cs" />
     <Compile Include="PdfDocumentObjects\PdfStreamObject.cs" />

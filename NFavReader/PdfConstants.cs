@@ -11,7 +11,7 @@
 
         public static class Markers {
             public static string Percent = "%";
-            public static string Obj = "obj";
+            public static string Obj = " obj";
             public static string EndObj = "endobj";
             public static string Stream = "stream";
             public static string EndStream = "endstream";
@@ -34,6 +34,9 @@
             public static string Length = "/Length";
             public static string OpenAction = "/OpenAction";
             public static string Contents = "/Contents";
+            public static string Font = "/Font";
+            public static string FontDescriptor = "/FontDescriptor";
+            public static string Annot = "/Annot";
         }
 
         public static class Dictionary{
@@ -41,7 +44,6 @@
             public static string KEY_GROUP = "KEY";
             public static string VALUE_GROUP = "VALUE";
             public const string PATTERN = @"\A<<(?<ENTRY>(?<KEY>/\w+)((?<VALUE>[ ]*\[[^\]]+\])|(?<VALUE>[ ]*[^\[^\w][^/^\]]+))[\n\r]{0,1})+>>";
-//            public const string PATTERN = @"\A<<(?<1>(?<2>/\w+)((?<3>\[{1}[^\]]+\]{1})|(?<3>[^\[^w][^/^\]]+))[\n\r]{0,1})+>>";
         }
 
         public static class Integer{
@@ -57,6 +59,7 @@
             public const string ID_GROUP = "ID";
             public const string VAL_GROUP = "VAL";
             public const string TYPE_GROUP = "TYPE";
+            public const string PATTERN = @"^(\d+ \d+ obj)";
             public const string REF_PATTERN = @"^(?<" + ID_GROUP + @">\d+) (?<" + VAL_GROUP + @">\d+) (?<" + TYPE_GROUP + @">\w+)$";
             public const string REF_TYPE = "R";
         }

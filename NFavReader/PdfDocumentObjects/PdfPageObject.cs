@@ -5,13 +5,18 @@ namespace NFavReader{
         public PdfPageObject(int id, long position, IDictionary<string, object> dictionary) : base(id, position, dictionary){
         }
 
-        public PdfStreamObject Content { get; set; }
+        public List<PdfDictionaryObject> Content { get; set; }
 
         public override void Validate(IDictionary<int, AbstractPdfDocumentObject> pdfObjects) {
             base.Validate(pdfObjects);
             if (!Dictionary.ContainsKey(PdfConstants.Names.Contents))
                 throw new PdfException("Page object doesn't contain Content object reference");
-            Content = (PdfStreamObject)Dictionary[PdfConstants.Names.Contents];
+            Content = new List<PdfDictionaryObject>();
+            var content = Dictionary[PdfConstants.Names.Contents];
+            if (content is PdfDictionaryObject)
+                Content.Add((PdfDictionaryObject)content);
+            else
+                ((List<AbstractPdfDocumentObject>)content).ForEach(obj => Content.Add((PdfDictionaryObject) obj));
         }
 
         public override string ToString() {
