@@ -10,9 +10,10 @@ namespace NFavReader{
 
         public override void Validate(IDictionary<int, AbstractPdfDocumentObject> pdfObjects){
             base.Validate(pdfObjects);
-            if(!Dictionary.ContainsKey(PdfConstants.Names.OpenAction))
-                throw new PdfException("Catalog object doesn't contain OpenAction entry");
-            //            OpenActionObject = //TODO
+
+            //            if(!Dictionary.ContainsKey(PdfConstants.Names.OpenAction))
+            //                throw new PdfException("Catalog object doesn't contain OpenAction entry");
+            //            OpenActionObject = //TODO - optional?
             if(!Dictionary.ContainsKey(PdfConstants.Names.Pages))
                 throw new PdfException("Catalog object doesn't contain Pages entry");
             if(!(Dictionary[PdfConstants.Names.Pages] is PdfPagesObject))

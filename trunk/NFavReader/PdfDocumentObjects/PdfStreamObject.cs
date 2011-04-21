@@ -18,7 +18,15 @@ namespace NFavReader{
             base.Validate(pdfObjects);
             if (!Dictionary.ContainsKey(PdfConstants.Names.Length))
                 throw new PdfException("Stream object doesn't contain Length entry");
-            Length = (PdfScalarObject)Dictionary[PdfConstants.Names.Length];
+            var value = Dictionary[PdfConstants.Names.Length];
+            if (value is PdfScalarObject)
+                Length = (PdfScalarObject) value;
+            else if (value is int)
+                Length = new PdfScalarObject(0, 0, (int)value);
+            else if (value is long)
+                Length = new PdfScalarObject(0, 0, (long)value);
+            else
+                throw new PdfException("Length entry type was not recognized");
         }
         
         public override string ToString(){

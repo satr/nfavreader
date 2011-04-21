@@ -86,7 +86,8 @@ namespace NFavReaderTests {
 
         [TestMethod]
         public void TestLoadPdf(){
-            _engine.FileName = _pdfEmptyFilePath;
+            _engine.FileName = _pdfOneLineFilePath;
+//            _engine.FileName = _pdfEmptyFilePath;
             var pdfStructure = _engine.LoadPdfStructure();
         }
 
